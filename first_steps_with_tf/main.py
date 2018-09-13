@@ -82,4 +82,31 @@ def my_input_fn(features, targets, batch_size=1, shuffle=True, num_epochs=None):
     return features, labels
 
 # Train the model
+_ = linear_regressor.train(
+    input_fn=lambda: my_input_fn(my_feature, targets),
+    steps=100
+)
+
+# Evaluate model
+
+# Create an input function for predictions
+# Note: Since we are making just one prediction for each sample, we don't need to
+# repeat or shuffle the data here
+prediction_input_fn = lambda: my_input_fn(my_feature, targets, num_epochs=1, shuffle=False)
+
+# Call predict() on the linear regressor to make predictions
+predictions = linear_regressor.predict(input_fn=prediction_input_fn)
+
+# Format predictions as s NumPy array, so we can calculate error metrics
+predictions = np.array(item['predictions'][0] for item in predictions)
+
+# Print Mean Squared Error and Root Mean Square Error
+mean_squared_error = metrics.mean_squared_error(predictions, targets)
+root_mean_squared_error = math.sqrt(mean_squared_error)
+
+print("Mean Squared Error (on training data): %.3f" % mean_squared_error)
+print("Root Mean Squared Error (on training data): %.3f" % root_mean_squared_error)
+
+
+
 
